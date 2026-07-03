@@ -83,3 +83,33 @@ class WordAnalyzer:
     while True:
         print("\n--- Word Analyzer ---")
         print("Please select a file to analyze:")
+        # Displaying menu dynamically without file extensions (.txt)
+        for key, item in file_options.items():
+            print(f"{key}. {item['name']}")
+        print("5. Exit")
+
+        choice = input("\nEnter your choice (1-5): ").strip()
+
+        if choice == "5":
+            print("\nGoodbye!")
+            break
+        
+        elif choice in file_options:
+            selected_file = file_options[choice]
+            print(f"\nProcessing '{selected_file['path'].name}'...")
+            
+            # Instantiating the OOP object with the path string
+            analyzer = WordAnalyzer(str(selected_file['path']))
+            
+            if analyzer.process_file():
+                analyzer.print_report()
+            
+            input("\nPress Enter to return to the menu... ")
+        
+        else:
+            print("\nInvalid choice. Please select from 1-5.")
+            input("\nPress Enter to return to the menu... ")
+
+
+if __name__ == "__main__":
+    main()
