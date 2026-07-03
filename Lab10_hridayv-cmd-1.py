@@ -46,7 +46,40 @@ class WordAnalyzer:
                     for word in words:
                         # Increment or set word count
                         self.__frequencies[word] = self.__frequencies.get(word, 0) + 1
-                        return True
+                # Mission success: returns True after the loops finish reading everything
+            return True
+            
         except FileNotFoundError:
             print(f"\nError: The file '{self.__filepath.name}' could not be found.")
             return False
+
+    def print_report(self):
+        """
+        Sorts the accumulated frequencies alphabetically and prints them 
+        in a clean, readable column format.
+        """
+        if not self.__frequencies:
+            print("No data to report.")
+            return
+
+        # Sort the dictionary keys alphabetically
+        sorted_words = sorted(self.__frequencies.keys())
+
+        print(f"\n--- Word Frequency Report: {self.__filepath.name} ---")
+        for word in sorted_words:
+            # Using left alignment formatting to mimic the assignment layout
+            print(f"{word:<15} :: {self.__frequencies[word]}")
+        print("-" * 40)
+        def main():
+    # Constructing paths safely using pathlib
+    # Assumes text files sit in the same directory as this script
+            file_options = {
+                "1": {"name": "Princess of Mars", "path": Path("princess_mars.txt")},
+                "2": {"name": "Tarzan", "path": Path("Tarzan.txt")},
+                "3": {"name": "Treasure Island", "path": Path("treasure_island.txt")},
+                "4": {"name": "Count of Monte Cristo", "path": Path("monte_cristo.txt")}
+    }
+
+    while True:
+        print("\n--- Word Analyzer ---")
+        print("Please select a file to analyze:")
