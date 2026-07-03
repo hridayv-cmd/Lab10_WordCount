@@ -1,6 +1,6 @@
 """
 Program: Word Count Analyzer
-Author: Your Name
+Author: Hriday Vermani
 Purpose: An OOP-based program that reads a user-selected text file, filters out 
          punctuation and normalizes text, counts word frequencies, and prints 
          an alphabetical report.
@@ -40,10 +40,14 @@ class WordAnalyzer:
             # Open and process line by line
             with self.__filepath.open('r', encoding='utf-8') as file:
                 for line in file:
-                    # Replace double hyphens with a space to prevent fused words
+                    # 1. Start with the original 'line' from the file
                     cleaned_line = line.replace('--', ' ')
                     
-                    # Clean line: convert to lowercase and remove punctuation strings
+                    # 2. Now use 'cleaned_line' to continue updating the text
+                    cleaned_line = cleaned_line.replace('—', ' ')  # Catches the long dash
+                    cleaned_line = cleaned_line.replace('-', ' ')  # Catches the short hyphen
+                    
+                    # 3. Pass it into your lowercase and translator
                     cleaned_line = cleaned_line.lower().translate(translator)
                     words = cleaned_line.split()
                     
