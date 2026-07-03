@@ -7,109 +7,116 @@ Purpose: An OOP-based program that reads a user-selected text file, filters out
 Starter Code: None (Built entirely based on Lab 10 requirements)
 Date: July 3, 2026
 """
-from pathlib import Path
+
 import string
+from pathlib import Path
 
 class WordAnalyzer:
     def __init__(self, filepath: str):
         """
-        Initializes the WordAnalyzer with a private Path object and an empty
-        dictionary for tracking word frequencies.
+        Initializes the analyzer with a private Path object 
+        and a private dictionary for frequencies.
         """
         self.__filepath = Path(filepath)
         self.__frequencies = {}
 
     def process_file(self) -> bool:
         """
-        Main data processing logic. Reads the file line by line, cleans text,
-        and updates the word frequency dictionary.
-        
-        Returns:
-            bool: True if processing succeeded, False if FileNotFoundError occurred.
+        Main logic to read and parse the file. Uses a try-except block,
+        removes all standard and smart punctuation, and updates counts.
         """
         try:
-            # Explicitly checking for existence using Path.exists()
+            # Check if file exists using pathlib
             if not self.__filepath.exists():
                 raise FileNotFoundError
-            # Creating a translation table to strip punctuation
-            # string.punctuation contains characters like !, ., ?, etc.
-            translator = str.maketrans('', '', string.punctuation)
-
-            # Using Path.open() to read line by line safely
+            
+            # Combine standard punctuation with custom smart quotes/bullets
+            extra_punctuation = "“”‘’•—’‘"
+            all_punctuation = string.punctuation + extra_punctuation
+            
+            # Create a translation table to strip out all punctuation completely
+            translator = str.maketrans('', '', all_punctuation)
+            
+            # Open and process line by line
             with self.__filepath.open('r', encoding='utf-8') as file:
                 for line in file:
-                    # Convert to lowercase and remove punctuation
-                    cleaned_line = line.lower().translate(translator)
-                    # Split line into an array of individual words
+                    # Replace double hyphens with a space to prevent fused words
+                    cleaned_line = line.replace('--', ' ')
+                    
+                    # Clean line: convert to lowercase and remove punctuation strings
+                    cleaned_line = cleaned_line.lower().translate(translator)
                     words = cleaned_line.split()
                     
                     for word in words:
-                        # Increment or set word count
-                        self.__frequencies[word] = self.__frequencies.get(word, 0) + 1
-                # Mission success: returns True after the loops finish reading everything
+                        # Extra protection to clean individual trailing/leading strays
+                        word = word.strip()
+                        if word:
+                            self.__frequencies[word] = self.__frequencies.get(word, 0) + 1
             return True
             
         except FileNotFoundError:
-            print(f"\nError: The file '{self.__filepath.name}' could not be found.")
+            print(f"Error: The file '{self.__filepath.name}' was not found.")
             return False
 
     def print_report(self):
         """
-        Sorts the accumulated frequencies alphabetically and prints them 
-        in a clean, readable column format.
+        Sorts the words alphabetically and prints them in the specified format.
         """
         if not self.__frequencies:
             print("No data to report.")
             return
 
-        # Sort the dictionary keys alphabetically
+        # Sort keys alphabetically
         sorted_words = sorted(self.__frequencies.keys())
-
-        print(f"\n--- Word Frequency Report: {self.__filepath.name} ---")
+        
         for word in sorted_words:
-            # Using left alignment formatting to mimic the assignment layout
+            # Matches the exact spacing format from the example output: word  :: count
             print(f"{word:<15} :: {self.__frequencies[word]}")
-        print("-" * 40)
-        def main():
-    # Constructing paths safely using pathlib
-    # Assumes text files sit in the same directory as this script
-            file_options = {
-                "1": {"name": "Princess of Mars", "path": Path("princess_mars.txt")},
-                "2": {"name": "Tarzan", "path": Path("Tarzan.txt")},
-                "3": {"name": "Treasure Island", "path": Path("treasure_island.txt")},
-                "4": {"name": "Count of Monte Cristo", "path": Path("monte_cristo.txt")}
+
+
+def main():
+    # File dictionary mapping menu keys to Path objects
+    files_menu = {
+        "1": Path("tarzan.txt"),
+        "2": Path("princess_mars.txt"),
+        "3": Path("monte_cristo.txt"),
+        "4": Path("treasure_island.txt")
     }
 
     while True:
         print("\n--- Word Analyzer ---")
         print("Please select a file to analyze:")
-        # Displaying menu dynamically without file extensions (.txt)
-        for key, item in file_options.items():
-            print(f"{key}. {item['name']}")
+        print("1. Tarzan")
+        print("2. Princess of Mars")
+        print("3. Monte Cristo")
+        print("4. Treasure Island")
         print("5. Exit")
-
-        choice = input("\nEnter your choice (1-5): ").strip()
-
-        if choice == "5":
-            print("\nGoodbye!")
-            break
         
-        elif choice in file_options:
-            selected_file = file_options[choice]
-            print(f"\nProcessing '{selected_file['path'].name}'...")
+        choice = input("\nEnter your choice (1-5): ").strip()
+        
+        if choice in files_menu:
+            target_path = files_menu[choice]
             
-            # Instantiating the OOP object with the path string
-            analyzer = WordAnalyzer(str(selected_file['path']))
+            # Print the header exactly matching assignment instructions
+            print(f"\nProcessing '{target_path.name}'...\n")
             
+            # Instantiate the OOP Class
+            analyzer = WordAnalyzer(str(target_path))
+            
+            # If successful, print the report
             if analyzer.process_file():
                 analyzer.print_report()
+                
+            print() # Clear line for look
+            input("Press Enter to return to the menu... ")
             
-            input("\nPress Enter to return to the menu... ")
-        
+        elif choice == '5':
+            print("\nGoodbye!")
+            break
+            
         else:
             print("\nInvalid choice. Please select from 1-5.")
             input("\nPress Enter to return to the menu... ")
-
 
 if __name__ == "__main__":
     main()
